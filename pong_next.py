@@ -15,6 +15,34 @@ bat_speed=25
 
 # class definations:
 
+class Brick:
+    def __init__(self,color:(int,int,int),x:int,y:int,wdh:int,hgt,border:int):
+        self.color=color
+        self.x=x
+        self.y=y
+        self.wdh=wdh
+        self.hgt=hgt
+        self.border=border
+    def collision_brick(self,Ball):
+        # Check if the ball is within the brick’s bounding box
+
+
+
+        if (Ball.y-Ball_radius<=self.y+self.hgt) and (Ball.y+Ball_radius>=self.y):
+            if(Ball.x+Ball.radius>=self.x) and (Ball.x<=self.x+self.wdh):
+                Ball.y_vel=-1*Ball.y_vel
+                return True
+            #check for side collision
+            if (Ball.x>=self.x) and (Ball.x<=self.x+self.wdh):
+                Ball.x_vel=-1*Ball.x_vel
+                return True
+            else :
+                return False
+    def draw(self,surface):
+        pygame.draw.rect(surface,self.color,(self.x,self.y,self.wdh,self.hgt),self.border)
+                
+
+
 class Ball:
     def __init__(self,color: (int ,int, int),x:int,y:int,x_vel,y_vel,radius:int) -> None:  #def __init__(self,color: (int ,int, int),position:(int,int),radius:int) -> None:
         self.color=color
@@ -26,6 +54,7 @@ class Ball:
     def move(self):
         self.x=self.x+self.x_vel
         self.y=self.y+self.y_vel
+    
     
 
     def draw(self,surface) :
@@ -93,9 +122,11 @@ class gameManager():
     def __init__(self):
         self.score=0
         
-    def updateScore(self,Collision,Bounce):
+    def updateScore(self,Collision,Collsion_brick,Bounce):
         if Collision==True:
              self.score=self.score+1
+        elif Collsion_brick==True:
+            self.score=self.score+5
         #score zero
         elif Bounce:
                 self.score=0
@@ -111,6 +142,7 @@ clock = pygame.time.Clock()
 # creating game object
 newBall = Ball(Ball_color, Ball_x_pos, Ball_y_pos, Ball_x_vel, Ball_y_vel, Ball_radius)
 newBat=Bat(Bat_color,Bat_x_pos,Bat_y_pos,Bat_width,Bat_height,bat_speed,Bat_stroke)
+newBrick=Brick((0,0,0),300,300,100,50,5)
 new_gameManager=gameManager()
 
 
@@ -125,12 +157,16 @@ while running:
     
     screen.fill((0,126,0))  # 1) clear background
     newBall.move() 
-    newBat.move()   
+    newBat.move()  
+    
     bounce=newBall.bounce() #we need to update alaway to fetch the score
     collision=newBat.collision(newBall)
+    collison_brick=newBrick.collision_brick(newBall)
+    newBrick.draw(screen) 
+
     newBall.draw(screen)
     newBat.draw(screen)
-    new_gameManager.updateScore(collision,bounce)
+    new_gameManager.updateScore(collision,collison_brick,bounce)
     font=pygame.font.Font(None,36)
     score_text=font.render(f"score: {new_gameManager.score}",True,(255,255,255))
     screen.blit(score_text,(10,10))
