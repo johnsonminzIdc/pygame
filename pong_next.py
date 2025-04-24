@@ -112,11 +112,9 @@ clock = pygame.time.Clock()
 newBall = Ball(Ball_color, Ball_x_pos, Ball_y_pos, Ball_x_vel, Ball_y_vel, Ball_radius)
 newBat=Bat(Bat_color,Bat_x_pos,Bat_y_pos,Bat_width,Bat_height,bat_speed,Bat_stroke)
 new_gameManager=gameManager()
-bounce=newBall.bounce
-collision=newBat.collision
-# creating loop variable
+
+
 running = True
-#new_score=0
 
 
 #Main loop
@@ -124,19 +122,18 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
-    screen.fill((0,126,0))        # 1) clear background
+    
+    screen.fill((0,126,0))  # 1) clear background
     newBall.move() 
     newBat.move()   
-    newBall.bounce()            # 2) update position each frame
-    newBat.collision(newBall)
+    bounce=newBall.bounce() #we need to update alaway to fetch the score
+    collision=newBat.collision(newBall)
     newBall.draw(screen)
     newBat.draw(screen)
     new_gameManager.updateScore(collision,bounce)
     font=pygame.font.Font(None,36)
     score_text=font.render(f"score: {new_gameManager.score}",True,(255,255,255))
     screen.blit(score_text,(10,10))
-    
     pygame.display.update()       # 4) flip buffers
     clock.tick(120)
 
