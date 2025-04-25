@@ -13,6 +13,17 @@ Bat_width,Bat_height=150,25
 Bat_stroke=10
 bat_speed=25
 
+#brick
+brick_rows = 5
+brick_cols = 8
+brick_width = 80
+brick_height = 30
+brick_gap = 10
+start_x = 50
+start_y = 50
+
+
+
 # class definations:
 
 class Brick:
@@ -24,20 +35,37 @@ class Brick:
         self.hgt=hgt
         self.border=border
     def collision_brick(self,Ball):
-        # Check if the ball is within the brick’s bounding box
+        # check the overlap with the corridinate for ball and brick 
 
-
-
-        if (Ball.y-Ball_radius<=self.y+self.hgt) and (Ball.y+Ball_radius>=self.y):
-            if(Ball.x+Ball.radius>=self.x) and (Ball.x<=self.x+self.wdh):
-                Ball.y_vel=-1*Ball.y_vel
-                return True
-            #check for side collision
-            if (Ball.x>=self.x) and (Ball.x<=self.x+self.wdh):
-                Ball.x_vel=-1*Ball.x_vel
-                return True
-            else :
-                return False
+        if (Ball.y-Ball.radius<=self.y+self.hgt) and (Ball.y+Ball.radius>=self.y) and \
+        (Ball.x+Ball.radius>=self.x) and (Ball.x<=self.x+self.wdh):
+               overlapLeft=abs((Ball.x+Ball.radius)-self.x)
+               overlapRight=abs((Ball.x-Ball.radius)-(self.x+self.wdh))
+               overlapTop=abs((Ball.y-Ball.radius)-self.y)
+               overlapBottom=abs((Ball.y+Ball.radius)-(self.y+self.hgt))
+               #check for side collision
+               min_overlap= min(overlapBottom,overlapTop,overlapRight,overlapLeft) 
+               if min_overlap == overlapLeft:
+                    Ball.x = self.x - Ball.radius
+                    Ball.x_vel *= -1
+               elif min_overlap == overlapRight:
+                        Ball.x = self.x + self.wdh + Ball.radius
+                        Ball.x_vel *= -1
+               elif min_overlap == overlapTop:
+                        Ball.y = self.y - Ball.radius
+                        Ball.y_vel *= -1
+               elif min_overlap == overlapBottom:
+                    Ball.y = self.y + self.hgt + Ball.radius
+                    Ball.y_vel *= -1
+               return True
+        return False
+             #  if check_min==overlapLeft or check_min==overlapRight:
+             #      Ball.x_vel=-1*Ball.x_vel
+             #  else:
+             #   Ball.y_vel=-1*Ball.y_vel
+               
+            
+                
     def draw(self,surface):
         pygame.draw.rect(surface,self.color,(self.x,self.y,self.wdh,self.hgt),self.border)
                 
